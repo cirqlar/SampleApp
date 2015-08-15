@@ -3,6 +3,7 @@ require 'test_helper'
 class UsersIndexTest < ActionDispatch::IntegrationTest
 
   def setup
+    @example = users(:example)
     @admin     = users(:michael)
     @non_admin = users(:archer)
   end
@@ -14,8 +15,10 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     assert_select 'div.pagination'
     first_page_of_users = User.paginate(page: 1)
     first_page_of_users.each do |user|
-      assert_select 'a[href=?]', user_path(user), text: user.name
       unless user == @admin
+        assert_select 'a[href=?]', user_path(user), text: user.name
+      end
+      unless user == @admin || user == @example
         assert_select 'a[href=?]', user_path(user), text: 'delete'
       end
     end
